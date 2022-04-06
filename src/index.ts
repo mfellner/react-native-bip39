@@ -18,9 +18,6 @@ type RandomNumberGenerator = (size: number) => Promise<Uint8Array>;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
-const WORDLIST_REQUIRED =
-  'A wordlist is required but a default could not be found.\n' +
-  'Please pass a 2048 word array explicitly.';
 
 export async function mnemonicToSeed(mnemonic: string, password: string = '') {
   var mnemonicBuffer = Buffer.from(mnemonic, 'utf8');
@@ -34,9 +31,6 @@ export async function mnemonicToSeedHex(mnemonic: string, password: string = '')
 }
 
 export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT_WORDLIST) {
-  if (!wordlist) {
-    throw new Error(WORDLIST_REQUIRED);
-  }
   const words = normalize(mnemonic).split(' ');
   if (words.length % 3 !== 0) {
     throw new Error(INVALID_MNEMONIC);
@@ -75,7 +69,7 @@ export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT
 }
 
 export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] = DEFAULT_WORDLIST) {
-  if (!Buffer.isBuffer(entropy)) {
+  if (typeof entropy === 'string') {
     entropy = Buffer.from(entropy, 'hex');
   }
   // 128 <= ENT <= 256
@@ -101,24 +95,19 @@ export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] =
     : words.join(' ');
 }
 
-export function generateMnemonic(
+export async function generateMnemonic(
   strength: number = 128,
   rng: RandomNumberGenerator = generateSecureRandom,
   wordlist: string[] = DEFAULT_WORDLIST,
 ) {
-  return new Promise<any>((resolve, reject) => {
-    rng(strength / 8)
-      .then((bytes) => {
-        if (!wordlist) {
-          throw new Error('No wordlist');
-        }
-        const hexBuffer = Buffer.from(bytes).toString('hex');
-        resolve(entropyToMnemonic(hexBuffer, wordlist));
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  if (strength % 32 !== 0) {
+    throw new TypeError(INVALID_ENTROPY);
+  }
+
+  const bytes = await rng(strength / 8);
+  const hexBuffer = Buffer.from(bytes);
+
+  return entropyToMnemonic(hexBuffer, wordlist);
 }
 
 export function validateMnemonic(mnemonic: string, wordlist?: string[]) {

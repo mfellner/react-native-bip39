@@ -37,18 +37,16 @@ test.each([
   const vmnemonic = v[1];
   const vseedHex = v[2];
 
-  expect(bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy); // 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...',
-
+  expect(bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy); // 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
   // TODO FIXME
-  // expect(await bip39.mnemonicToSeedHex(vmnemonic, password)).toEqual(vseedHex); // 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...',
+  // expect(await bip39.mnemonicToSeedHex(vmnemonic, password)).toEqual(vseedHex); // 'mnemonicToSeed returns ' + vseedHex.slice(0, 40) + '...')
 
-  expect(bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic); // 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...',
+  expect(bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic); // 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...'
 
   const rng = async () => Buffer.from(ventropy, 'hex');
 
-  expect(await bip39.generateMnemonic(undefined, rng, wordlist)).toEqual(vmnemonic); // 'generateMnemonic returns RNG entropy unmodified',
-
-  expect(bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true); // 'validateMnemonic returns true',
+  expect(await bip39.generateMnemonic(undefined, rng, wordlist)).toEqual(vmnemonic); // 'generateMnemonic returns RNG entropy unmodified'
+  expect(bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true); // 'validateMnemonic returns true'
 });
 
 test.skip.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedHex) => {
