@@ -1,59 +1,37 @@
 {
   "name": "react-native-bip39",
   "version": "2.2.0",
+  "license": "MIT",
   "description": "ReactNative-ready Bitcoin BIP39: Mnemonic code for generating deterministic keys",
-  "main": "lib/commonjs/index.js",
-  "module": "lib/module/index.js",
   "scripts": {
-    "standard": "standard"
+    "test": "jest"
   },
   "author": "Alberto Dallaporta",
-  "contributors": [],
+  "contributors": [
+    "Maximilian Fellner <mail@mfellner.eu>"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/39otrebla/react-native-bip39"
   },
-  "license": "MIT",
   "dependencies": {
-    "create-hash": "^1.1.0",
-    "react-native-fast-crypto": "^2.0.0",
-    "react-native-securerandom": "1.0.0",
-    "unorm": "^1.3.3"
+    "buffer": "6.0.3",
+    "create-hash": "^1.2.0",
+    "react-native-fast-crypto": "^2.2.0",
+    "react-native-securerandom": "^1.0.0",
+    "unorm": "^1.6.0"
   },
   "devDependencies": {
-    "@react-native-community/bob": "^0.16.2",
-    "nyc": "^15.1.0",
-    "proxyquire": "^2.1.3",
-    "standard": "16.0.1",
-    "tape": "^5.0.1",
-    "typescript": "^4.0.5"
-  },
-  "react-native": "src/index.ts",
-  "types": "lib/typescript/index.d.ts",
-  "files": [
-    ".",
-    "index.ts",
-    "lib",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
-  "@react-native-community/bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      [
-        "commonjs",
-        {
-          "copyFlow": true
-        }
-      ],
-      "module",
-      "typescript"
-    ]
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ]
+    "@types/create-hash": "1.2.2",
+    "@types/jest": "27.4.1",
+    "@types/proxyquire": "1.3.28",
+    "@types/react-native": "0.67.3",
+    "@types/unorm": "1.3.28",
+    "babel-jest": "27.5.1",
+    "jest": "27.5.1",
+    "metro-react-native-babel-preset": "0.70.0",
+    "react-native": "0.68.0",
+    "tape": "5.5.2",
+    "typescript": "4.6.3"
+  }
 }

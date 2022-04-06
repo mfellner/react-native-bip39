@@ -1,8 +1,5 @@
 # ReactNative BIP39 (react-native-bip39)
 
-[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
-
 ReactNative-ready fork of the [original Javascript implementation of Bitcoin BIP39](https://github.com/bitcoinjs/bip39): Mnemonic code for generating deterministic keys
 
 ## Features
