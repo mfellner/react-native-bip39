@@ -16,7 +16,6 @@ jobs:
           node-version: '16'
           cache: yarn
       - run: yarn install --frozen-lockfile --check-files
-      - run: yarn build
 
       - name: Typecheck
         run: yarn typecheck

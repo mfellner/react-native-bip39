@@ -42,7 +42,7 @@ test.each([
     (v, i) => ['Japanese', bip39.wordlists.JA, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i] as const,
   ),
   ...vectors.custom.map((v, i) => ['Custom', CUSTOM_WORDLIST, undefined, v, i] as const),
-])('for %s test vector %#', async (description, wordlist, password, v, i) => {
+])('for %s test vector %#', async (description, wordlist, password, v) => {
   const ventropy = v[0];
   const vmnemonic = v[1];
   const vseedHex = v[2];

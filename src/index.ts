@@ -25,8 +25,8 @@ export async function mnemonicToSeed(mnemonic: string, password?: string) {
   return pbkdf2.deriveAsync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 
-export async function mnemonicToSeedHex(mnemonic: string, password: string = '') {
-  var seed = await mnemonicToSeed(mnemonic, password);
+export async function mnemonicToSeedHex(mnemonic: string, password = '') {
+  const seed = await mnemonicToSeed(mnemonic, password);
   return seed.toString('hex');
 }
 
@@ -50,7 +50,7 @@ export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT
   const entropyBits = bits.slice(0, dividerIndex);
   const checksumBits = bits.slice(dividerIndex);
   // calculate the checksum and compare
-  const entropyBytes = entropyBits.match(/(.{1,8})/g)!.map(binaryToByte);
+  const entropyBytes = entropyBits.match(/(.{1,8})/g)?.map(binaryToByte) || [];
   if (entropyBytes.length < 16) {
     throw new Error(INVALID_ENTROPY);
   }
@@ -86,7 +86,10 @@ export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] =
   const checksumBits = deriveChecksumBits(entropy);
   const bits = entropyBits + checksumBits;
   const chunks = bits.match(/(.{1,11})/g);
-  const words = chunks!.map((binary) => {
+  if (!chunks) {
+    throw new TypeError(INVALID_ENTROPY);
+  }
+  const words = chunks.map((binary) => {
     const index = binaryToByte(binary);
     return wordlist[index];
   });
@@ -96,7 +99,7 @@ export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] =
 }
 
 export async function generateMnemonic(
-  strength: number = 128,
+  strength = 128,
   rng: RandomNumberGenerator = generateSecureRandom,
   wordlist: string[] = DEFAULT_WORDLIST,
 ) {
@@ -136,7 +139,7 @@ function lpad(str: string, padString: string, length: number): string {
   return str;
 }
 
-function normalize(str: string = ''): string {
+function normalize(str = ''): string {
   return str.normalize('NFKD');
 }
 
