@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "outDir": "dist/",
-    "target": "ES2019",
+    "target": "ES6",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": true,
-    "checkJs": false,
     "resolveJsonModule": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "sourceMap": true
   }
 }

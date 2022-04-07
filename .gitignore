@@ -197,4 +197,4 @@ Temporary Items
 *.d.ts
 lib/**/*.js
 index.js
-build/
+dist/
