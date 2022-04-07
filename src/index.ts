@@ -19,9 +19,9 @@ const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
 
-export async function mnemonicToSeed(mnemonic: string, password: string = '') {
-  var mnemonicBuffer = Buffer.from(mnemonic, 'utf8');
-  var saltBuffer = Buffer.from(salt(password), 'utf8');
+export async function mnemonicToSeed(mnemonic: string, password?: string) {
+  const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
+  const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
   return pbkdf2.deriveAsync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 
@@ -119,40 +119,28 @@ export function validateMnemonic(mnemonic: string, wordlist?: string[]) {
   return true;
 }
 
-function checksumBits(entropyBuffer: Buffer) {
-  var hash = createHash('sha256').update(entropyBuffer).digest();
-
-  // Calculated constants from BIP39
-  var ENT = entropyBuffer.length * 8;
-  var CS = ENT / 32;
-
-  return bytesToBinary([].slice.call(hash)).slice(0, CS);
-}
-
 function salt(password: string) {
   return 'mnemonic' + (unorm.nfkd(password) || ''); // Use unorm until String.prototype.normalize gets better browser support
 }
 
 //=========== helper methods from bitcoinjs-lib ========
 
-function bytesToBinary(bytes: number[]) {
-  return bytes
-    .map(function (x: any) {
-      return lpad(x.toString(2), '0', 8);
-    })
-    .join('');
+function bytesToBinary(bytes: number[]): string {
+  return bytes.map((x: number): string => lpad(x.toString(2), '0', 8)).join('');
 }
 
-function lpad(str: string, padString: string, length: number) {
-  while (str.length < length) str = padString + str;
+function lpad(str: string, padString: string, length: number): string {
+  while (str.length < length) {
+    str = padString + str;
+  }
   return str;
 }
 
-function normalize(str: string) {
-  return (str || '').normalize('NFKD');
+function normalize(str: string = ''): string {
+  return str.normalize('NFKD');
 }
 
-function binaryToByte(bin: string) {
+function binaryToByte(bin: string): number {
   return parseInt(bin, 2);
 }
 

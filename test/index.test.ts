@@ -1,12 +1,15 @@
 import { Buffer } from 'buffer';
 import { pbkdf2 as mockPbkdf2, randomBytes as mockRandomBytes } from 'crypto';
 import * as bip39 from '../src/';
-import vectors from './vectors.json';
 import DEFAULT_WORDLIST from '../wordlists/en.json';
+import vectors from './vectors.json';
+import CUSTOM_WORDLIST from './wordlist.json';
 
 const mockGenerateSecureRandomAsBase64 = jest.fn(async (length: number) =>
   mockRandomBytes(length).toString('base64'),
 );
+
+const mockBuffer = Buffer;
 
 jest.mock('react-native', () => ({
   NativeModules: {
@@ -14,12 +17,19 @@ jest.mock('react-native', () => ({
       generateSecureRandomAsBase64: (length: number) => mockGenerateSecureRandomAsBase64(length),
     },
     RNFastCrypto: {
-      pbkdf2Sha512: jest.fn(async (data, salt, iterations, size) => {
+      pbkdf2Sha512: jest.fn((data: string, salt: string, iterations: number, size: number) => {
         return new Promise((resolve, reject) => {
-          mockPbkdf2(data, salt, iterations, size, 'sha512', (err, derivedKey) => {
-            if (err) return reject(err);
-            resolve(derivedKey.toString('base64'));
-          });
+          mockPbkdf2(
+            mockBuffer.from(data, 'base64'),
+            mockBuffer.from(salt, 'base64'),
+            iterations,
+            size,
+            'sha512',
+            (err, derivedKey) => {
+              if (err) return reject(err);
+              resolve(derivedKey.toString('base64'));
+            },
+          );
         });
       }),
     },
@@ -28,28 +38,28 @@ jest.mock('react-native', () => ({
 
 test.each([
   ...vectors.english.map((v, i) => ['English', undefined, 'TREZOR', v, i] as const),
-  // ...vectors.japanese.map(
-  //   (v, i) => ['Japanese', bip39.wordlists.JA, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i] as const,
-  // ),
-  // ...vectors.custom.map((v, i) => ['Custom', bip39.wordlists.ES, undefined, v, i] as const),
-])('for %s test vector', async (description, wordlist, password, v, i) => {
+  ...vectors.japanese.map(
+    (v, i) => ['Japanese', bip39.wordlists.JA, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i] as const,
+  ),
+  ...vectors.custom.map((v, i) => ['Custom', CUSTOM_WORDLIST, undefined, v, i] as const),
+])('for %s test vector %#', async (description, wordlist, password, v, i) => {
   const ventropy = v[0];
   const vmnemonic = v[1];
   const vseedHex = v[2];
 
-  expect(bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy); // 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
+  expect(bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy);
   // TODO FIXME
-  // expect(await bip39.mnemonicToSeedHex(vmnemonic, password)).toEqual(vseedHex); // 'mnemonicToSeed returns ' + vseedHex.slice(0, 40) + '...')
+  expect(await bip39.mnemonicToSeedHex(vmnemonic, password)).toEqual(vseedHex);
 
-  expect(bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic); // 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...'
+  expect(bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic);
 
   const rng = async () => Buffer.from(ventropy, 'hex');
 
-  expect(await bip39.generateMnemonic(undefined, rng, wordlist)).toEqual(vmnemonic); // 'generateMnemonic returns RNG entropy unmodified'
-  expect(bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true); // 'validateMnemonic returns true'
+  expect(await bip39.generateMnemonic(undefined, rng, wordlist)).toEqual(vmnemonic);
+  expect(bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true);
 });
 
-test.skip.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedHex) => {
+test.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedHex) => {
   const password = '㍍ガバヴァぱばぐゞちぢ十人十色';
   const normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色';
 
@@ -88,9 +98,9 @@ test('README example 3', async () => {
 
   expect(seed.toString('hex')).toEqual(seedHex);
   // TODO FIXME
-  // expect(seedHex).toEqual(
-  //   '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f',
-  // );
+  expect(seedHex).toEqual(
+    '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f',
+  );
   expect(bip39.validateMnemonic(mnemonic)).toBe(false);
 });
 
