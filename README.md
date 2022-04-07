@@ -22,7 +22,7 @@ However, there should be other checks in place, such as checking to make sure th
 
 ```js
 
-import bip39 from 'react-native-bip39'
+import bip39 from '@mfellner/react-native-bip39'
 
 // Generate a random mnemonic (uses react-native-randombytes under the hood), defaults to 128-bits of entropy
 
@@ -52,7 +52,7 @@ bip39.validateMnemonic('basket actual')
 ```
 
 ```js
-import bip39 from 'react-native-bip39';
+import bip39 from '@mfellner/react-native-bip39';
 
 // defaults to BIP39 English word list
 // uses HEX strings for entropy
