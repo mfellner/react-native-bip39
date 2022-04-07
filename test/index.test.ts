@@ -133,6 +133,10 @@ test('generateMnemonic only requests the exact amount of data from an RNG', asyn
   });
 });
 
+test('generateMnemonic rejects invalid entropy', async () => {
+  expect(bip39.generateMnemonic(6)).rejects.toThrowError(/^Invalid entropy$/);
+});
+
 test('validateMnemonic', () => {
   expect(bip39.validateMnemonic('sleep kitten')).toBe(false); // 'fails for a mnemonic that is too short');
   expect(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten')).toBe(false); // 'fails for a mnemonic that is too short',
