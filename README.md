@@ -2,7 +2,6 @@
 
 [![Build Status](https://img.shields.io/github/workflow/status/mfellner/react-native-bip39/test?style=flat&colorA=000000&colorB=000000)](https://github.com/mfellner/react-native-bip39/actions?query=workflow%3Atest)
 [![Codecov](https://img.shields.io/codecov/c/github/mfellner/react-native-bip39?colorA=000000&colorB=000000)](https://app.codecov.io/gh/mfellner/react-native-bip39)
-[![Build Size](https://img.shields.io/bundlephobia/minzip/@mfellner/react-native-bip39?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@mfellner/react-native-bip39)
 [![Version](https://img.shields.io/npm/v/@mfellner/react-native-bip39?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@mfellner/react-native-bip39)
 [![Downloads](https://img.shields.io/npm/dt/@mfellner/react-native-bip39.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@mfellner/react-native-bip39)
 
