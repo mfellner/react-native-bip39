@@ -14,8 +14,10 @@
   "contributors": [
     "Maximilian Fellner <mail@mfellner.eu>"
   ],
-  "module": "dist/src/index.js",
-  "types": "dist/types.d.ts",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "exports": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "files": [
     "dist/",
     "LICENSE"
