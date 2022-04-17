@@ -1,5 +1,9 @@
 import { Buffer } from 'buffer';
-import { pbkdf2 as mockPbkdf2, randomBytes as mockRandomBytes } from 'crypto';
+import {
+  createHash as mockCreateHash,
+  pbkdf2 as mockPbkdf2,
+  randomBytes as mockRandomBytes,
+} from 'crypto';
 import * as bip39 from '../src/';
 import DEFAULT_WORDLIST from '../wordlists/en.json';
 import vectors from './vectors.json';
@@ -12,6 +16,9 @@ const mockGenerateSecureRandomAsBase64 = jest.fn(async (length: number) =>
 const mockBuffer = Buffer;
 
 jest.mock('react-native', () => ({
+  Platform: {
+    select: () => '',
+  },
   NativeModules: {
     RNSecureRandom: {
       generateSecureRandomAsBase64: (length: number) => mockGenerateSecureRandomAsBase64(length),
@@ -33,6 +40,12 @@ jest.mock('react-native', () => ({
         });
       }),
     },
+    FastCreateHash: {
+      createHash: jest.fn(async (data64: string, algorithm: string): Promise<string> => {
+        const inp = global.Buffer.from(data64, 'base64');
+        return mockCreateHash(algorithm).update(inp).digest('base64');
+      }),
+    },
   },
 }));
 
@@ -47,16 +60,16 @@ test.each([
   const vmnemonic = v[1];
   const vseedHex = v[2];
 
-  expect(bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy);
+  expect(await bip39.mnemonicToEntropy(vmnemonic, wordlist)).toEqual(ventropy);
   // TODO FIXME
   expect(await bip39.mnemonicToSeedHex(vmnemonic, password)).toEqual(vseedHex);
 
-  expect(bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic);
+  expect(await bip39.entropyToMnemonic(ventropy, wordlist)).toEqual(vmnemonic);
 
   const rng = async () => Buffer.from(ventropy, 'hex');
 
   expect(await bip39.generateMnemonic(undefined, rng, wordlist)).toEqual(vmnemonic);
-  expect(bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true);
+  expect(await bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true);
 });
 
 test.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedHex) => {
@@ -68,14 +81,14 @@ test.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedH
   expect(await bip39.mnemonicToSeedHex(vmnemonic, normalizedPassword)).toEqual(vseedHex); // 'mnemonicToSeedHex leaves normalizes passwords as-is',
 });
 
-test('README example 1', () => {
+test('README example 1', async () => {
   const entropy = 'ffffffffffffffffffffffffffffffff';
-  const mnemonic = bip39.entropyToMnemonic(entropy);
+  const mnemonic = await bip39.entropyToMnemonic(entropy);
 
   expect(mnemonic).toEqual('zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong');
 
   // reversible
-  expect(bip39.mnemonicToEntropy(mnemonic)).toEqual(entropy);
+  expect(await bip39.mnemonicToEntropy(mnemonic)).toEqual(entropy);
 });
 
 test('README example 2', async () => {
@@ -88,7 +101,7 @@ test('README example 2', async () => {
   expect(mnemonic).toEqual(
     'imitate robot frame trophy nuclear regret saddle around inflict case oil spice',
   );
-  expect(bip39.validateMnemonic(mnemonic)).toBe(true);
+  expect(await bip39.validateMnemonic(mnemonic)).toBe(true);
 });
 
 test('README example 3', async () => {
@@ -97,25 +110,25 @@ test('README example 3', async () => {
   const seedHex = await bip39.mnemonicToSeedHex(mnemonic);
 
   expect(seed.toString('hex')).toEqual(seedHex);
-  // TODO FIXME
+
   expect(seedHex).toEqual(
     '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f',
   );
-  expect(bip39.validateMnemonic(mnemonic)).toBe(false);
+  expect(await bip39.validateMnemonic(mnemonic)).toBe(false);
 });
 
-test('invalid entropy', () => {
-  expect(() => {
-    bip39.entropyToMnemonic(Buffer.from('', 'hex'));
-  }).toThrow(/^Invalid entropy$/); // 'throws for empty entropy')
+test('invalid entropy', async () => {
+  await expect(bip39.entropyToMnemonic(Buffer.from('', 'hex'))).rejects.toThrow(
+    /^Invalid entropy$/,
+  ); // 'throws for empty entropy')
 
-  expect(() => {
-    bip39.entropyToMnemonic(Buffer.from('000000', 'hex'));
-  }).toThrow(/^Invalid entropy$/); // "throws for entropy that's not a multitude of 4 bytes",
+  await expect(bip39.entropyToMnemonic(Buffer.from('000000', 'hex'))).rejects.toThrow(
+    /^Invalid entropy$/,
+  ); // "throws for entropy that's not a multitude of 4 bytes",
 
-  expect(() => {
-    bip39.entropyToMnemonic(Buffer.from(new Array(1028 + 1).join('00'), 'hex'));
-  }).toThrow(/^Invalid entropy$/); // 'throws for entropy that is larger than 1024',
+  await expect(
+    bip39.entropyToMnemonic(Buffer.from(new Array(1028 + 1).join('00'), 'hex')),
+  ).rejects.toThrow(/^Invalid entropy$/); // 'throws for entropy that is larger than 1024',
 });
 
 test('generateMnemonic can vary entropy length', async () => {
@@ -137,19 +150,21 @@ test('generateMnemonic rejects invalid entropy', async () => {
   expect(bip39.generateMnemonic(6)).rejects.toThrowError(/^Invalid entropy$/);
 });
 
-test('validateMnemonic', () => {
-  expect(bip39.validateMnemonic('sleep kitten')).toBe(false); // 'fails for a mnemonic that is too short');
-  expect(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten')).toBe(false); // 'fails for a mnemonic that is too short',
-  expect(
+test('validateMnemonic', async () => {
+  await expect(bip39.validateMnemonic('sleep kitten')).resolves.toBe(false); // 'fails for a mnemonic that is too short');
+  await expect(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten')).resolves.toBe(
+    false,
+  ); // 'fails for a mnemonic that is too short',
+  await expect(
     bip39.validateMnemonic(
       'turtle front uncle idea crush write shrug there lottery flower risky shell',
     ),
-  ).toBe(false); // 'fails if mnemonic words are not in the word list',
-  expect(
+  ).resolves.toBe(false); // 'fails if mnemonic words are not in the word list',
+  await expect(
     bip39.validateMnemonic(
       'sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten',
     ),
-  ).toBe(false); // 'fails for invalid checksum',
+  ).resolves.toBe(false); // 'fails for invalid checksum',
 });
 
 test('exposes standard wordlists', () => {

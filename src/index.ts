@@ -1,5 +1,5 @@
+import { createHash } from '@mfellner/react-native-fast-create-hash';
 import { Buffer } from 'buffer';
-import createHash from 'create-hash';
 import { pbkdf2 } from 'react-native-fast-crypto';
 import { generateSecureRandom } from 'react-native-securerandom';
 import unorm from 'unorm';
@@ -30,7 +30,7 @@ export async function mnemonicToSeedHex(mnemonic: string, password = '') {
   return seed.toString('hex');
 }
 
-export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT_WORDLIST) {
+export async function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT_WORDLIST) {
   const words = normalize(mnemonic).split(' ');
   if (words.length % 3 !== 0) {
     throw new Error(INVALID_MNEMONIC);
@@ -61,14 +61,14 @@ export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = DEFAULT
     throw new Error(INVALID_ENTROPY);
   }
   const entropy = Buffer.from(entropyBytes);
-  const newChecksum = deriveChecksumBits(entropy);
+  const newChecksum = await deriveChecksumBits(entropy);
   if (newChecksum !== checksumBits) {
     throw new Error(INVALID_CHECKSUM);
   }
   return entropy.toString('hex');
 }
 
-export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] = DEFAULT_WORDLIST) {
+export async function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] = DEFAULT_WORDLIST) {
   if (typeof entropy === 'string') {
     entropy = Buffer.from(entropy, 'hex');
   }
@@ -83,7 +83,7 @@ export function entropyToMnemonic(entropy: string | Buffer, wordlist: string[] =
     throw new TypeError(INVALID_ENTROPY);
   }
   const entropyBits = bytesToBinary(Array.from(entropy));
-  const checksumBits = deriveChecksumBits(entropy);
+  const checksumBits = await deriveChecksumBits(entropy);
   const bits = entropyBits + checksumBits;
   const chunks = bits.match(/(.{1,11})/g);
   if (!chunks) {
@@ -113,9 +113,9 @@ export async function generateMnemonic(
   return entropyToMnemonic(hexBuffer, wordlist);
 }
 
-export function validateMnemonic(mnemonic: string, wordlist?: string[]) {
+export async function validateMnemonic(mnemonic: string, wordlist?: string[]) {
   try {
-    mnemonicToEntropy(mnemonic, wordlist);
+    await mnemonicToEntropy(mnemonic, wordlist);
   } catch (e) {
     return false;
   }
@@ -147,10 +147,10 @@ function binaryToByte(bin: string): number {
   return parseInt(bin, 2);
 }
 
-function deriveChecksumBits(entropyBuffer: Buffer) {
+async function deriveChecksumBits(entropyBuffer: Buffer) {
   const ENT = entropyBuffer.length * 8;
   const CS = ENT / 32;
-  const hash = createHash('sha256').update(entropyBuffer).digest();
+  const hash = await createHash(entropyBuffer, 'sha256');
   return bytesToBinary(Array.from(hash)).slice(0, CS);
 }
 

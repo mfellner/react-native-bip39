@@ -1,0 +1,31 @@
+{
+  "name": "@mfellner/react-native-bip39-example",
+  "description": "Example app for react-native-bip39",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "clean": "react-native-clean-project",
+    "postinstall": "patch-package"
+  },
+  "dependencies": {
+    "@mfellner/react-native-bip39": "../",
+    "@mfellner/react-native-fast-create-hash": "1.0.0-alpha.2",
+    "buffer": "6.0.3",
+    "react": "17.0.2",
+    "react-native": "0.68.1",
+    "react-native-fast-crypto": "2.2.0",
+    "react-native-securerandom": "1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.17.9",
+    "@babel/runtime": "7.17.9",
+    "babel-plugin-module-resolver": "4.1.0",
+    "metro-react-native-babel-preset": "0.70.1",
+    "patch-package": "6.4.7",
+    "postinstall-postinstall": "2.1.0",
+    "react-native-clean-project": "4.0.1"
+  }
+}

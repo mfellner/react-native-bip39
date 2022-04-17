@@ -1,0 +1,64 @@
+diff --git a/node_modules/react-native-securerandom/android/build.gradle b/node_modules/react-native-securerandom/android/build.gradle
+index e21cdf0..21d7519 100644
+--- a/node_modules/react-native-securerandom/android/build.gradle
++++ b/node_modules/react-native-securerandom/android/build.gradle
+@@ -16,7 +16,7 @@ buildscript {
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven'
++apply plugin: 'maven-publish'
+ 
+ def safeExtGet(prop, fallback) {
+     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+@@ -87,17 +87,17 @@ def configureReactNativePom(def pom) {
+ 
+ afterEvaluate { project ->
+ 
+-    task androidJavadoc(type: Javadoc) {
+-        source = android.sourceSets.main.java.srcDirs
+-        classpath += files(android.bootClasspath)
+-        classpath += files(project.getConfigurations().getByName('compile').asList())
+-        include '**/*.java'
+-    }
++    // task androidJavadoc(type: Javadoc) {
++    //     source = android.sourceSets.main.java.srcDirs
++    //     classpath += files(android.bootClasspath)
++    //     classpath += files(project.getConfigurations().getByName('compile').asList())
++    //     include '**/*.java'
++    // }
+ 
+-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        classifier = 'javadoc'
+-        from androidJavadoc.destinationDir
+-    }
++    // task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
++    //     classifier = 'javadoc'
++    //     from androidJavadoc.destinationDir
++    // }
+ 
+     task androidSourcesJar(type: Jar) {
+         classifier = 'sources'
+@@ -114,16 +114,16 @@ afterEvaluate { project ->
+ 
+     artifacts {
+         archives androidSourcesJar
+-        archives androidJavadocJar
++        // archives androidJavadocJar
+     }
+ 
+     task installArchives(type: Upload) {
+         configuration = configurations.archives
+-        repositories.mavenDeployer {
+-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
+-            repository url: "file://${projectDir}/../android/maven"
++        // repositories.mavenDeployer {
++        //     // Deploy to react-native-event-bridge/maven, ready to publish to npm
++        //     repository url: "file://${projectDir}/../android/maven"
+ 
+-            configureReactNativePom pom
+-        }
++        //     configureReactNativePom pom
++        // }
+     }
+ }

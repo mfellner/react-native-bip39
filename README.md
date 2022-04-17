@@ -7,6 +7,16 @@
 
 ReactNative-ready fork of the [original Javascript implementation of Bitcoin BIP39](https://github.com/bitcoinjs/bip39): Mnemonic code for generating deterministic keys
 
+## Installation
+
+```sh
+yarn add \
+  @mfellner/react-native-bip39 \
+  @mfellner/react-native-fast-create-hash \
+  react-native-fast-crypto \
+  react-native-securerandom
+```
+
 ## Features
 
 - Native generation of random bytes using [react-native-randombytes](https://github.com/mvayngrib/react-native-randombytes)
