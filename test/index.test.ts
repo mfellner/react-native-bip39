@@ -55,7 +55,7 @@ test.each([
     (v, i) => ['Japanese', bip39.wordlists.JA, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i] as const,
   ),
   ...vectors.custom.map((v, i) => ['Custom', CUSTOM_WORDLIST, undefined, v, i] as const),
-])('for %s test vector %#', async (description, wordlist, password, v) => {
+])('for %s test vector %#', async (_description, wordlist, password, v) => {
   const ventropy = v[0];
   const vmnemonic = v[1];
   const vseedHex = v[2];
@@ -72,7 +72,7 @@ test.each([
   expect(await bip39.validateMnemonic(vmnemonic, wordlist)).toBe(true);
 });
 
-test.each(vectors.japanese)('UTF8 passwords', async (ventropy, vmnemonic, vseedHex) => {
+test.each(vectors.japanese)('UTF8 passwords', async (_ventropy, vmnemonic, vseedHex) => {
   const password = '㍍ガバヴァぱばぐゞちぢ十人十色';
   const normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色';
 
