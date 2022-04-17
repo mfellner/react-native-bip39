@@ -1,6 +1,11 @@
 
 
-## [2.3.0-beta.0](https://github.com/mfellner/react-native-bip39/compare/v2.2.0...v2.3.0-beta.0) (2022-04-10)
+## [2.3.0-beta.1](https://github.com/mfellner/react-native-bip39/compare/v2.3.0-beta.0...v2.3.0-beta.1) (2022-04-17)
+
+
+### Bug Fixes
+
+* use native hash function ([d4628d7](https://github.com/mfellner/react-native-bip39/commit/d4628d74b321f230c94dc49c7389669b0fe96e8e))## [2.3.0-beta.0](https://github.com/mfellner/react-native-bip39/compare/v2.2.0...v2.3.0-beta.0) (2022-04-10)
 
 ## [2.2.0](https://github.com/mfellner/react-native-bip39/compare/v2.2.0...v2.3.0-beta.0) (2015-08-17)
 
