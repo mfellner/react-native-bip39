@@ -1,6 +1,11 @@
 
 
-## [2.3.0-beta.1](https://github.com/mfellner/react-native-bip39/compare/v2.3.0-beta.0...v2.3.0-beta.1) (2022-04-17)
+## [2.3.0-beta.2](https://github.com/mfellner/react-native-bip39/compare/v2.3.0-beta.1...v2.3.0-beta.2) (2022-04-19)
+
+
+### Bug Fixes
+
+* include src in dist dir ([e9c3286](https://github.com/mfellner/react-native-bip39/commit/e9c328693e7ad215fae4fc46f5e1b40ea39f81da))## [2.3.0-beta.1](https://github.com/mfellner/react-native-bip39/compare/v2.3.0-beta.0...v2.3.0-beta.1) (2022-04-17)
 
 
 ### Bug Fixes
