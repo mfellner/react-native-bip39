@@ -21,13 +21,12 @@
   "main": "dist/commonjs/index",
   "module": "dist/module/index",
   "types": "dist/typescript/src/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "react-native": "dist/src/index",
+  "source": "dist/src/index",
   "files": [
     "dist/",
-    "src/",
     "LICENSE",
-    "!*.py"
+    "!**/*.py"
   ],
   "publishConfig": {
     "access": "public",
@@ -37,7 +36,7 @@
     "test": "jest",
     "typecheck": "tsc -P tsconfig.json --noEmit",
     "clean": "rm -rf dist/",
-    "prepare": "husky install && bob build && cpy wordlists/ dist/",
+    "prepare": "husky install && bob build && cpy wordlists/ dist/ && cpy src/ dist/",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
